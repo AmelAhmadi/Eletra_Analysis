@@ -11,7 +11,7 @@ The key insights and recommendations focus on the following areas:
 * **Loyalty program evaluation**: Evaluating the effectiveness of the company’s loyalty program and providing recommendations to maximize customer engagement and retention.
 * **Regional results**: An evaluation of sales and orders by region.
 
-An interactive PowerBI dashboard can be downloaded [here](Report/Eletra_dashboard.pbix).
+An interactive PowerBI dashboard can be downloaded [here](Report/Eletra_dashboard.pbix?raw=1).
 
 The SQL queries used to clean and solve business related questions can be found here.
 
