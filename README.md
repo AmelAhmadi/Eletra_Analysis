@@ -13,7 +13,7 @@ The key insights and recommendations focus on the following areas:
 
 An interactive PowerBI dashboard can be downloaded [here](Eletra_dashboard.pbix?raw=1).
 
-The SQL queries used to solve business related questions can be found [here](SQL%20Queries.sql?raw=1).
+The SQL queries used to solve business related questions can be found [here](SQL%20Queries.sql).
 
 
 # Data Structure and ERD (Entity relationship diagram)
