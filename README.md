@@ -25,7 +25,7 @@ Eletra’s database structure as seen below consists of four tables: orders, cus
 ### Overview of findings
 Since the late 2020 peak, sales have trended downward, with the sharpest declines in 2022. Year over year, every KPI moved lower: order volume by 40%, revenue by 46%, and average order value (AOV) by 10%. While much of this softening aligns with post-pandemic normalization, the following sections examine additional drivers and highlight key opportunity areas for improvement.
 
-Below is an overview of the PowerBI dashboard used for this analysis. The dashboard can be downloaded here.
+Below is an overview of the PowerBI dashboard used for this analysis. The dashboard can be downloaded [here](Eletra_dashboard.pbix?raw=1).
 
 <img width="1169" height="655" alt="image" src="https://github.com/user-attachments/assets/a8b05239-d6b8-4163-82cb-c076d0b249a3" />
 
