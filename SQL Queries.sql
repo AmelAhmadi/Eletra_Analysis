@@ -1,61 +1,65 @@
--- Total Revenue
+-- Total Revenue (USD)
 SELECT ROUND(SUM(usd_price), 2) AS total_revenue
-FROM v_orders_enriched
+FROM core.orders
 WHERE purchase_ts >= '2019-01-01' AND purchase_ts < '2023-01-01';
 
 -- Order Volume (distinct orders)
-SELECT COUNT(DISTINCT order_id) AS order_volume
-FROM v_orders_enriched
+SELECT COUNT(DISTINCT id) AS order_volume
+FROM core.orders
 WHERE purchase_ts >= '2019-01-01' AND purchase_ts < '2023-01-01';
 
--- AOV
-SELECT ROUND(
-         SUM(usd_price) / NULLIF(COUNT(DISTINCT order_id), 0)
-       , 2) AS aov
-FROM v_orders_enriched
+-- AOV = Revenue / Orders
+SELECT ROUND(SUM(usd_price) / NULLIF(COUNT(DISTINCT id), 0), 2) AS aov
+FROM core.orders
 WHERE purchase_ts >= '2019-01-01' AND purchase_ts < '2023-01-01';
 
 -- YoY % for Revenue, Orders, and AOV
 WITH yr AS (
   SELECT
-    order_year AS yr,
-    SUM(revenue) AS rev,
-    COUNT(DISTINCT order_id) AS ords,
-    SUM(revenue)::numeric / NULLIF(COUNT(DISTINCT order_id),0) AS aov
-  FROM v_orders_enriched
-  GROUP BY 1
+    YEAR(purchase_ts) AS yr,
+    SUM(usd_price) AS rev,
+    COUNT(DISTINCT id) AS ords,
+    SUM(usd_price) / NULLIF(COUNT(DISTINCT id), 0) AS aov
+  FROM core.orders
+  GROUP BY YEAR(purchase_ts)
 )
 SELECT
   y.yr,
-  y.rev,
-  ROUND(100*(y.rev - LAG(y.rev) OVER w)/NULLIF(LAG(y.rev) OVER w,0), 1) AS rev_yoy_pct,
+  ROUND(y.rev, 2) AS rev,
+  ROUND(100 * (y.rev  - LAG(y.rev)  OVER (ORDER BY y.yr))
+            / NULLIF(LAG(y.rev)  OVER (ORDER BY y.yr), 0), 1) AS rev_yoy_pct,
   y.ords,
-  ROUND(100*(y.ords - LAG(y.ords) OVER w)/NULLIF(LAG(y.ords) OVER w,0), 1) AS ords_yoy_pct,
-  ROUND(y.aov,2) AS aov,
-  ROUND(100*(y.aov - LAG(y.aov) OVER w)/NULLIF(LAG(y.aov) OVER w,0), 1) AS aov_yoy_pct
+  ROUND(100 * (y.ords - LAG(y.ords) OVER (ORDER BY y.yr))
+            / NULLIF(LAG(y.ords) OVER (ORDER BY y.yr), 0), 1) AS ords_yoy_pct,
+  ROUND(y.aov, 2) AS aov,
+  ROUND(100 * (y.aov  - LAG(y.aov)  OVER (ORDER BY y.yr))
+            / NULLIF(LAG(y.aov)  OVER (ORDER BY y.yr), 0), 1) AS aov_yoy_pct
 FROM yr y
-WINDOW w AS (ORDER BY y.yr)
 ORDER BY y.yr;
 
 -- Monthly revenue
-SELECT DATE_TRUNC('month', order_date)::date AS month_start,
-       SUM(revenue) AS revenue
-FROM v_orders_enriched
-GROUP BY 1
-ORDER BY 1;
+SELECT
+  DATE_FORMAT(purchase_ts, '%Y-%m-01') AS month_start,
+  ROUND(SUM(usd_price), 2) AS revenue
+FROM core.orders
+GROUP BY DATE_FORMAT(purchase_ts, '%Y-%m-01')
+ORDER BY month_start;
 
 -- Quarter by year
-SELECT order_year, order_qtr, SUM(revenue) AS revenue
-FROM v_orders_enriched
-GROUP BY 1,2
-ORDER BY 1,2;
+SELECT
+  YEAR(purchase_ts) AS order_year,
+  CONCAT('Q', QUARTER(purchase_ts)) AS order_qtr,
+  ROUND(SUM(usd_price), 2) AS revenue
+FROM core.orders
+GROUP BY YEAR(purchase_ts), QUARTER(purchase_ts)
+ORDER BY order_year, order_qtr;
 
 -- AOV by month and loyalty bucket
 SELECT
   DATE_TRUNC('month', order_date)::date AS month_start,
   loyalty_bucket,
   ROUND(SUM(revenue)::numeric / NULLIF(COUNT(DISTINCT order_id),0), 2) AS aov
-FROM v_orders_enriched
+FROM core.orders
 GROUP BY 1,2
 ORDER BY 1,2;
 
@@ -65,7 +69,7 @@ WITH base AS (
   SELECT
     loyalty_bucket,
     ROUND(SUM(revenue)::numeric / NULLIF(COUNT(DISTINCT order_id),0), 2) AS aov_2022
-  FROM v_orders_enriched
+  FROM core.orders
   WHERE order_year = 2022
   GROUP BY loyalty_bucket
 )
@@ -93,9 +97,7 @@ WITH sales_by_product_by_region AS (
   GROUP BY 1,2
 )
 
-SELECT 
-  *
+SELECT *
 FROM sales_by_product_by_region
 QUALIFY RANK() OVER(PARTITION BY region ORDER BY order_count DESC) = 1
-ORDER BY order_count DESC
-;
+ORDER BY order_count DESC;
