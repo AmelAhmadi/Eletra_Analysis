@@ -53,7 +53,8 @@ Below is an overview of the PowerBI dashboard used for this analysis. The dashbo
 
 * Eletra is also Apple-dependent, with the brand **accounting for 48% of total revenue in 2022**. Apple’s iPhone has yet to make an impact though, totaling less than 1% of orders in 2022 and $148,421 over the whole period.
 
-<img width="984" height="421" alt="image" src="https://github.com/user-attachments/assets/31cfc04a-7050-415a-8422-cdb22bf4eeaf" />
+<img width="984" height="744" alt="image" src="https://github.com/user-attachments/assets/55691154-66ba-425f-a898-8b1983f0d7e7" />
+
 
 <img width="984" height="307" alt="image" src="https://github.com/user-attachments/assets/de4205a8-e329-403c-a089-14179296d7b6" />
 
